@@ -1,0 +1,9 @@
+deepagents>=0.6.1
+httpx>=0.27.0
+beautifulsoup4>=4.12.0
+ddgs>=9.10.0
+python-dotenv>=1.2.1
+
+# Optional providers
+# langchain-openai>=1.0.0
+# langchain-ollama>=0.3.0
