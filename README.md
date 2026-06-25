@@ -5,10 +5,9 @@ ToolForge is a minimal local agent execution engine built with LangChain DeepAge
 The project is intentionally small and easy to inspect:
 
 - `main.py` starts the CLI, loads environment variables, creates the agent, prompts for folder access, and runs the task loop.
+- `agent.py` configures the model provider and creates the DeepAgents agent.
 - `tools.py` defines the sandboxed tools exposed to the agent.
 - `requirements.txt` lists the Python dependencies.
-
-> Note: the current checkout imports an `agent` module from `main.py`, but `agent.py` is not present in this repository snapshot. To run the project, add an `agent.py` module that exports `BASE_URL`, `MODEL_ID`, `PROVIDER`, and `create_opencowork_agent()`.
 
 ## Features
 
@@ -26,6 +25,7 @@ The project is intentionally small and easy to inspect:
 
 ```text
 ToolForge/
+|-- agent.py
 |-- main.py
 |-- tools.py
 |-- requirements.txt
@@ -42,6 +42,28 @@ ToolForge/
 5. Granted folders are stored in `tools.ALLOWED_DIRECTORIES`.
 6. User tasks are sent to the DeepAgents agent through `agent.ainvoke(...)`.
 7. The agent can call the tools in `tools.py` to inspect files, write files, run allowed commands, fetch pages, and search the web.
+
+## Agent Configuration
+
+`agent.py` creates the model and passes the project tools into `create_deep_agent(...)`.
+
+It reads these environment variables:
+
+- `OPENCOWORK_PROVIDER`: model provider. Supported values are `anthropic`, `google`, `openai`, `ollama`, `openrouter`, and `custom`.
+- `OPENCOWORK_MODEL`: provider-specific model name. Defaults to `claude-sonnet-4-6`.
+- `OPENCOWORK_API_KEY`: API key for hosted providers.
+- `OPENCOWORK_BASE_URL`: custom OpenAI-compatible endpoint URL.
+
+If no provider is configured, ToolForge defaults to Anthropic with `claude-sonnet-4-6`.
+
+Supported provider paths:
+
+- Anthropic uses `langchain_anthropic.ChatAnthropic`.
+- Google Gemini uses `langchain_google_genai.ChatGoogleGenerativeAI`.
+- OpenAI uses `langchain_openai.ChatOpenAI`.
+- Ollama uses `langchain_ollama.ChatOllama`, with a fallback to OpenAI-compatible `ChatOpenAI` at `http://localhost:11434/v1`.
+- OpenRouter uses `langchain_openrouter.ChatOpenRouter`.
+- Custom endpoints use OpenAI-compatible `ChatOpenAI` with `OPENCOWORK_BASE_URL`.
 
 ## Tools
 
@@ -91,14 +113,17 @@ ddgs>=9.10.0
 python-dotenv>=1.2.1
 ```
 
-Optional provider packages are listed in `requirements.txt` as comments:
+Optional provider packages used by `agent.py` include:
 
 ```text
+langchain-anthropic
+langchain-google-genai
 langchain-openai>=1.0.0
 langchain-ollama>=0.3.0
+langchain-openrouter
 ```
 
-Install the optional package that matches your provider.
+Install the package that matches your configured provider.
 
 ## Getting Started
 
@@ -136,6 +161,18 @@ pip install -r requirements.txt
 Install your provider integration if needed:
 
 ```bash
+pip install langchain-anthropic
+```
+
+or:
+
+```bash
+pip install langchain-google-genai
+```
+
+or:
+
+```bash
 pip install langchain-openai
 ```
 
@@ -145,54 +182,68 @@ or:
 pip install langchain-ollama
 ```
 
+or:
+
+```bash
+pip install langchain-openrouter
+```
+
 ### 4. Add environment variables
 
 Create a `.env` file in the project root. The exact values depend on your `agent.py` implementation and chosen provider.
 
-Example for an OpenAI-compatible provider:
+Example for Anthropic:
 
 ```env
-OPENAI_API_KEY=your_api_key_here
-MODEL_ID=gpt-4.1-mini
-PROVIDER=openai
-BASE_URL=
+OPENCOWORK_PROVIDER=anthropic
+OPENCOWORK_MODEL=claude-sonnet-4-6
+OPENCOWORK_API_KEY=sk-ant-your-key
 ```
 
-Example for a local Ollama setup:
+Example for OpenAI:
 
 ```env
-MODEL_ID=llama3.1
-PROVIDER=ollama
-BASE_URL=http://localhost:11434
+OPENCOWORK_PROVIDER=openai
+OPENCOWORK_MODEL=gpt-4o
+OPENCOWORK_API_KEY=sk-your-key
+```
+
+Example for Google Gemini:
+
+```env
+OPENCOWORK_PROVIDER=google
+OPENCOWORK_MODEL=gemini-2.0-flash
+OPENCOWORK_API_KEY=your-google-api-key
+```
+
+Example for local Ollama:
+
+```env
+OPENCOWORK_PROVIDER=ollama
+OPENCOWORK_MODEL=qwen2.5:7b
+OPENCOWORK_BASE_URL=http://localhost:11434
+```
+
+Example for OpenRouter:
+
+```env
+OPENCOWORK_PROVIDER=openrouter
+OPENCOWORK_MODEL=openai/gpt-4o-mini
+OPENCOWORK_API_KEY=your-openrouter-key
+```
+
+Example for any OpenAI-compatible endpoint:
+
+```env
+OPENCOWORK_PROVIDER=custom
+OPENCOWORK_MODEL=Qwen/Qwen2.5-72B-Instruct
+OPENCOWORK_BASE_URL=https://router.huggingface.co/v1
+OPENCOWORK_API_KEY=hf_your_token
 ```
 
 Do not commit `.env` files containing secrets.
 
-### 5. Add the agent module
-
-This repository expects an `agent.py` file with these exports:
-
-```python
-BASE_URL = ...
-MODEL_ID = ...
-PROVIDER = ...
-
-def create_opencowork_agent():
-    ...
-```
-
-The factory should return an object compatible with LangGraph/LangChain async invocation, because `main.py` calls:
-
-```python
-await agent.ainvoke(
-    {"messages": [HumanMessage(content=task)]},
-    {"recursion_limit": 60},
-)
-```
-
-It should also expose the tools from `tools.py` to the agent.
-
-### 6. Run the application
+### 5. Run the application
 
 ```bash
 python main.py
@@ -258,13 +309,23 @@ This is a practical development sandbox, not a hardened security boundary. Revie
 
 ## Troubleshooting
 
-### `ModuleNotFoundError: No module named 'agent'`
-
-Add the missing `agent.py` module described above.
-
 ### Provider authentication fails
 
 Check that `.env` exists, the API key is correct, and the provider package is installed.
+
+### Provider import fails
+
+Install the matching LangChain provider package for the configured `OPENCOWORK_PROVIDER`.
+
+Examples:
+
+```bash
+pip install langchain-anthropic
+pip install langchain-google-genai
+pip install langchain-openai
+pip install langchain-ollama
+pip install langchain-openrouter
+```
 
 ### Web search fails
 
