@@ -8,40 +8,40 @@ from tools import fetch_url, run_shell, search_web, write_file
 # =============================================================================
 # MODEL CONFIGURATION
 # =============================================================================
-# Set OPENCOWORK_PROVIDER to one of: anthropic | google | openai | ollama | custom
-# Then set OPENCOWORK_MODEL to the provider-specific model name.
+# Set TOOLFORGE_PROVIDER to one of: anthropic | google | openai | ollama | custom
+# Then set TOOLFORGE_MODEL to the provider-specific model name.
 #
 # --- Anthropic Claude (default if env not set) ---
-#   OPENCOWORK_PROVIDER=anthropic
-#   OPENCOWORK_MODEL=claude-sonnet-4-6
-#   OPENCOWORK_API_KEY=sk-ant-...
+#   TOOLFORGE_PROVIDER=anthropic
+#   TOOLFORGE_MODEL=claude-sonnet-4-6
+#   TOOLFORGE_API_KEY=sk-ant-...
 #
 # --- Google Gemini ---
-#   OPENCOWORK_PROVIDER=google
-#   OPENCOWORK_MODEL=gemini-2.0-flash
-#   OPENCOWORK_API_KEY=AIza...
+#   TOOLFORGE_PROVIDER=google
+#   TOOLFORGE_MODEL=gemini-2.0-flash
+#   TOOLFORGE_API_KEY=AIza...
 #
 # --- OpenAI ---
-#   OPENCOWORK_PROVIDER=openai
-#   OPENCOWORK_MODEL=gpt-4o
-#   OPENCOWORK_API_KEY=sk-...
+#   TOOLFORGE_PROVIDER=openai
+#   TOOLFORGE_MODEL=gpt-4o
+#   TOOLFORGE_API_KEY=sk-...
 #
 # --- Ollama (local) ---
-#   OPENCOWORK_PROVIDER=ollama
-#   OPENCOWORK_MODEL=qwen2.5:7b
+#   TOOLFORGE_PROVIDER=ollama
+#   TOOLFORGE_MODEL=qwen2.5:7b
 #
 # --- Any OpenAI-compatible endpoint (HuggingFace, vLLM, LM Studio, etc.) ---
-#   OPENCOWORK_PROVIDER=custom
-#   OPENCOWORK_MODEL=Qwen/Qwen2.5-72B-Instruct
-#   OPENCOWORK_BASE_URL=https://router.huggingface.co/v1
-#   OPENCOWORK_API_KEY=hf_your_token
+#   TOOLFORGE_PROVIDER=custom
+#   TOOLFORGE_MODEL=Qwen/Qwen2.5-72B-Instruct
+#   TOOLFORGE_BASE_URL=https://router.huggingface.co/v1
+#   TOOLFORGE_API_KEY=hf_your_token
 
-PROVIDER = os.environ.get("OPENCOWORK_PROVIDER", "anthropic").lower()
-MODEL_ID = os.environ.get("OPENCOWORK_MODEL", "claude-sonnet-4-6")
-BASE_URL = os.environ.get("OPENCOWORK_BASE_URL", "")
-API_KEY = os.environ.get("OPENCOWORK_API_KEY", "")
+PROVIDER = os.environ.get("TOOLFORGE_PROVIDER", "anthropic").lower()
+MODEL_ID = os.environ.get("TOOLFORGE_MODEL", "claude-sonnet-4-6")
+BASE_URL = os.environ.get("TOOLFORGE_BASE_URL", "")
+API_KEY = os.environ.get("TOOLFORGE_API_KEY", "")
 
-SYSTEM_PROMPT = """You are OpenCowork, a local task assistant with shell and file access.
+SYSTEM_PROMPT = """You are ToolForge, a local task assistant with shell and file access.
 You run on Windows but shell commands are automatically translated to Windows equivalents,
 so you can use standard Unix-style commands.
 
@@ -177,8 +177,8 @@ def create_model() -> BaseChatModel | str:
         return MODEL_ID
 
 
-def create_opencowork_agent():
-    """Create and return a DeepAgents-powered OpenCowork agent."""
+def create_toolforge_agent():
+    """Create and return a DeepAgents-powered ToolForge agent."""
     model = create_model()
 
     return create_deep_agent(

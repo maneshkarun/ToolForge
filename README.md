@@ -49,10 +49,10 @@ ToolForge/
 
 It reads these environment variables:
 
-- `OPENCOWORK_PROVIDER`: model provider. Supported values are `anthropic`, `google`, `openai`, `ollama`, `openrouter`, and `custom`.
-- `OPENCOWORK_MODEL`: provider-specific model name. Defaults to `claude-sonnet-4-6`.
-- `OPENCOWORK_API_KEY`: API key for hosted providers.
-- `OPENCOWORK_BASE_URL`: custom OpenAI-compatible endpoint URL.
+- `TOOLFORGE_PROVIDER`: model provider. Supported values are `anthropic`, `google`, `openai`, `ollama`, `openrouter`, and `custom`.
+- `TOOLFORGE_MODEL`: provider-specific model name. Defaults to `claude-sonnet-4-6`.
+- `TOOLFORGE_API_KEY`: API key for hosted providers.
+- `TOOLFORGE_BASE_URL`: custom OpenAI-compatible endpoint URL.
 
 If no provider is configured, ToolForge defaults to Anthropic with `claude-sonnet-4-6`.
 
@@ -63,7 +63,7 @@ Supported provider paths:
 - OpenAI uses `langchain_openai.ChatOpenAI`.
 - Ollama uses `langchain_ollama.ChatOllama`, with a fallback to OpenAI-compatible `ChatOpenAI` at `http://localhost:11434/v1`.
 - OpenRouter uses `langchain_openrouter.ChatOpenRouter`.
-- Custom endpoints use OpenAI-compatible `ChatOpenAI` with `OPENCOWORK_BASE_URL`.
+- Custom endpoints use OpenAI-compatible `ChatOpenAI` with `TOOLFORGE_BASE_URL`.
 
 ## Tools
 
@@ -195,50 +195,50 @@ Create a `.env` file in the project root. The exact values depend on your `agent
 Example for Anthropic:
 
 ```env
-OPENCOWORK_PROVIDER=anthropic
-OPENCOWORK_MODEL=claude-sonnet-4-6
-OPENCOWORK_API_KEY=sk-ant-your-key
+TOOLFORGE_PROVIDER=anthropic
+TOOLFORGE_MODEL=claude-sonnet-4-6
+TOOLFORGE_API_KEY=sk-ant-your-key
 ```
 
 Example for OpenAI:
 
 ```env
-OPENCOWORK_PROVIDER=openai
-OPENCOWORK_MODEL=gpt-4o
-OPENCOWORK_API_KEY=sk-your-key
+TOOLFORGE_PROVIDER=openai
+TOOLFORGE_MODEL=gpt-4o
+TOOLFORGE_API_KEY=sk-your-key
 ```
 
 Example for Google Gemini:
 
 ```env
-OPENCOWORK_PROVIDER=google
-OPENCOWORK_MODEL=gemini-2.0-flash
-OPENCOWORK_API_KEY=your-google-api-key
+TOOLFORGE_PROVIDER=google
+TOOLFORGE_MODEL=gemini-2.0-flash
+TOOLFORGE_API_KEY=your-google-api-key
 ```
 
 Example for local Ollama:
 
 ```env
-OPENCOWORK_PROVIDER=ollama
-OPENCOWORK_MODEL=qwen2.5:7b
-OPENCOWORK_BASE_URL=http://localhost:11434
+TOOLFORGE_PROVIDER=ollama
+TOOLFORGE_MODEL=qwen2.5:7b
+TOOLFORGE_BASE_URL=http://localhost:11434
 ```
 
 Example for OpenRouter:
 
 ```env
-OPENCOWORK_PROVIDER=openrouter
-OPENCOWORK_MODEL=openai/gpt-4o-mini
-OPENCOWORK_API_KEY=your-openrouter-key
+TOOLFORGE_PROVIDER=openrouter
+TOOLFORGE_MODEL=openai/gpt-4o-mini
+TOOLFORGE_API_KEY=your-openrouter-key
 ```
 
 Example for any OpenAI-compatible endpoint:
 
 ```env
-OPENCOWORK_PROVIDER=custom
-OPENCOWORK_MODEL=Qwen/Qwen2.5-72B-Instruct
-OPENCOWORK_BASE_URL=https://router.huggingface.co/v1
-OPENCOWORK_API_KEY=hf_your_token
+TOOLFORGE_PROVIDER=custom
+TOOLFORGE_MODEL=Qwen/Qwen2.5-72B-Instruct
+TOOLFORGE_BASE_URL=https://router.huggingface.co/v1
+TOOLFORGE_API_KEY=hf_your_token
 ```
 
 Do not commit `.env` files containing secrets.
@@ -315,7 +315,7 @@ Check that `.env` exists, the API key is correct, and the provider package is in
 
 ### Provider import fails
 
-Install the matching LangChain provider package for the configured `OPENCOWORK_PROVIDER`.
+Install the matching LangChain provider package for the configured `TOOLFORGE_PROVIDER`.
 
 Examples:
 

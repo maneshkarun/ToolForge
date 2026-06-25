@@ -14,7 +14,7 @@ load_dotenv(Path(__file__).parent / ".env")
 from langchain_core.messages import HumanMessage
 
 import tools
-from agent import BASE_URL, MODEL_ID, PROVIDER, create_opencowork_agent
+from agent import BASE_URL, MODEL_ID, PROVIDER, create_toolforge_agent
 
 # =============================================================================
 # TOOL LOGGING
@@ -63,11 +63,11 @@ tools.TOOL_LOGGER = tool_logger
 def print_banner():
     print("""
 ╔═══════════════════════════════════════════════════════════╗
-║              OPENCOWORK (DeepAgents Edition)              ║
-║         Open-source local task assistant                  ║
+║              TOOLFORGE (DeepAgents Edition)               ║
+║             Open-source local task assistant              ║
 ╠═══════════════════════════════════════════════════════════╣
 ║  Commands:                                                ║
-║    quit     - Exit OpenCowork                             ║
+║    quit     - Exit ToolForge                              ║
 ║    grant    - Grant access to another directory           ║
 ║    folders  - List granted directories                    ║
 ╚═══════════════════════════════════════════════════════════╝
@@ -140,11 +140,11 @@ async def main():
     print_banner()
 
     # Create agent (done once; LangGraph graph is stateless per .ainvoke call)
-    agent = create_opencowork_agent()
+    agent = create_toolforge_agent()
 
     # Grant initial folder access
     working_dir = grant_folder_access()
-    print(f"\n🚀 OpenCowork ready. Working directory: {working_dir}")
+    print(f"\n🚀 ToolForge ready. Working directory: {working_dir}")
     print("Type your task and press Enter. Type 'quit' to exit.\n")
 
     while True:
